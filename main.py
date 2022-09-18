@@ -7,7 +7,7 @@ import configparser
 # TODO description
 def save_tweets(search_query, api):
     # create db cursor
-    tweets = tw.Cursor(api.search_tweets,
+    tweets = tw.Cursor(api.search,
                        q=search_query,
                        lang="en",
                        tweet_mode='extended').items(50)
@@ -58,7 +58,7 @@ def save_csv(tweet_list):
 
 # config section, variables from config.ini
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('Twitter-API/config.ini')
 # your Twitter API key and API secret
 my_api_key = config["API"]['KEY']
 my_api_secret = config["API"]['SECRET']
@@ -74,3 +74,4 @@ api = tw.API(auth, wait_on_rate_limit=True)
 # section for running program. ideally with config the instructions can just be "run all cells"
 tweet_list = save_tweets(search_query, api)
 save_csv(tweet_list)
+

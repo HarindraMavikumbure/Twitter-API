@@ -4,8 +4,23 @@ import pandas as pd
 import configparser
 
 
-# TODO description
 def save_tweets(search_query, api):
+    """
+    Searches twitter using its API and saves tweets in a list.
+
+    Takes in API info and a search query, creates a cursor over tweets, iterates through its tweets, and stores them in
+    a list.
+
+    Parameters:
+    search_query (string): a search query built from information in config.ini
+    api(tweepy class): handles queries with twitter
+
+    Returns:
+    list: a list of tweets containing  user name, location, description, and verification status, date, text, hashtags,
+    and source.
+
+    """
+
     # create db cursor
     tweets = tw.Cursor(api.search,
                        q=search_query,
@@ -21,10 +36,20 @@ def save_tweets(search_query, api):
     return tweets_copy
 
 
-# TODO description
-# TODO csv filename, path
+# TODO custom filename, path
 def save_csv(tweet_list):
-    # intialize the dataframe
+    """
+    Saves a list of tweets as a CSV.
+
+    Parameters:
+    tweet_list(list): list of tweets containing user name, location, description, and verification status, date,
+    text, hashtags, and source.
+
+    Returns:
+    csv: a csv of tweets containing the same information contained by the list
+
+    """
+    # initialize the dataframe
     tweets_df = pd.DataFrame()
 
     # populate the dataframe
@@ -59,19 +84,20 @@ def save_csv(tweet_list):
 # config section, variables from config.ini
 config = configparser.ConfigParser()
 config.read('Twitter-API/config.ini')
+
 # your Twitter API key and API secret
 my_api_key = config["API"]['KEY']
 my_api_secret = config["API"]['SECRET']
+
+# get tweets by hashtags
+# TODO build a search_query string builder for hashtags mentions, keywords
 search_query = config["SEARCH"]['QUERY']
 
 # authenticate
 auth = tw.OAuthHandler(my_api_key, my_api_secret)
 api = tw.API(auth, wait_on_rate_limit=True)
 
-# TODO build a search_query string builder for hashtags mentions, keywords
-# get tweets by hashtags
 
 # section for running program. ideally with config the instructions can just be "run all cells"
 tweet_list = save_tweets(search_query, api)
 save_csv(tweet_list)
-

@@ -1,4 +1,13 @@
-# import tweepy
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#----------------------------------------------------------------------------
+# Created By  : Harindra Sandun Mavikumbure and Scott Taylor
+# Created Date: 9/15/2022
+# ---------------------------------------------------------------------------
+""" Uses the twitter API to extract tweets given a specific search query set in config.ini"""
+# ---------------------------------------------------------------------------
+# Imports
+# ---------------------------------------------------------------------------
 import tweepy as tw
 import pandas as pd
 import configparser
@@ -36,8 +45,7 @@ def save_tweets(search_query, api):
     return tweets_copy
 
 
-# TODO custom filename, path
-def save_csv(tweet_list):
+def save_csv(tweet_list, csv_filename):
     """
     Saves a list of tweets as a CSV.
 
@@ -68,17 +76,16 @@ def save_csv(tweet_list):
                        'date': tweet.created_at,
                        'text': text,
                        'hashtags': [hashtags if hashtags else None],
-                       'source': tweet.source}
+                       'source': tweet.source,
+                        'ID': tweet.id}
         tweets_df = pd.concat([tweets_df, pd.DataFrame(tweets_dict)], axis=0, ignore_index=True)
-
-        # TODO is this a nominal column? if so we should probably use tweet IDs instead, for peer review purposes
         tweets_df = tweets_df.reset_index(drop=True)
 
     # show the dataframe
     tweets_df.head()
 
     # save to csv
-    tweets_df.to_csv('tweets_by_hashtags.csv')
+    tweets_df.to_csv(csv_filename + '.csv')
 
 
 # config section, variables from config.ini
@@ -92,12 +99,14 @@ my_api_secret = config["API"]['SECRET']
 # get tweets by hashtags
 # TODO build a search_query string builder for hashtags mentions, keywords
 search_query = config["SEARCH"]['QUERY']
+csv_filename = config["CSV"]["FILENAME"]
 
 # authenticate
 auth = tw.OAuthHandler(my_api_key, my_api_secret)
 api = tw.API(auth, wait_on_rate_limit=True)
 
 
-# section for running program. ideally with config the instructions can just be "run all cells"
-tweet_list = save_tweets(search_query, api)
-save_csv(tweet_list)
+# run program. ideally with config the instructions can just be "run all cells"
+if __name__ == "__main__":
+    tweet_list = save_tweets(search_query, api)
+    save_csv(tweet_list, csv_filename)

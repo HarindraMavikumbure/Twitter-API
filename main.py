@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Created By  : Harindra Sandun Mavikumbure and Scott Taylor
 # Created Date: 9/15/2022
 # ---------------------------------------------------------------------------
@@ -11,6 +11,7 @@
 import tweepy as tw
 import pandas as pd
 import configparser
+import os
 
 
 def save_tweets(search_query, api):
@@ -45,7 +46,7 @@ def save_tweets(search_query, api):
     return tweets_copy
 
 
-def save_csv(tweet_list, csv_filename):
+def save_csv(tweet_list, csv_directory, csv_filename):
     """
     Saves a list of tweets as a CSV.
 
@@ -57,6 +58,7 @@ def save_csv(tweet_list, csv_filename):
     csv: a csv of tweets containing the same information contained by the list
 
     """
+    print("Exporting to csv...")
     # initialize the dataframe
     tweets_df = pd.DataFrame()
 
@@ -77,15 +79,20 @@ def save_csv(tweet_list, csv_filename):
                        'text': text,
                        'hashtags': [hashtags if hashtags else None],
                        'source': tweet.source,
-                        'ID': tweet.id}
+                       'ID': tweet.id}
         tweets_df = pd.concat([tweets_df, pd.DataFrame(tweets_dict)], axis=0, ignore_index=True)
         tweets_df = tweets_df.reset_index(drop=True)
 
     # show the dataframe
     tweets_df.head()
 
+    # make user-specified directory
+    if not os.path.exists(csv_directory):
+        os.mkdir(csv_directory)
+
     # save to csv
-    tweets_df.to_csv(csv_filename + '.csv')
+    tweets_df.to_csv(csv_directory + '/' + csv_filename + '.csv')
+    print("Exported")
 
 
 # config section, variables from config.ini
@@ -100,13 +107,13 @@ my_api_secret = config["API"]['SECRET']
 # TODO build a search_query string builder for hashtags mentions, keywords
 search_query = config["SEARCH"]['QUERY']
 csv_filename = config["CSV"]["FILENAME"]
+csv_directory = config["CSV"]["DIRECTORY"]
 
 # authenticate
 auth = tw.OAuthHandler(my_api_key, my_api_secret)
 api = tw.API(auth, wait_on_rate_limit=True)
 
-
 # run program. ideally with config the instructions can just be "run all cells"
 if __name__ == "__main__":
     tweet_list = save_tweets(search_query, api)
-    save_csv(tweet_list, csv_filename)
+    save_csv(tweet_list, csv_directory, csv_filename)

@@ -130,6 +130,7 @@ if __name__ == "__main__":
     if hash_search == "1":
         hash_list = ["tweets_by_hashtag"]
         hash_query = config["SEARCH"]['HASH_QUERY']
+        hash_query = "#" + hash_query
         hash_query += exclusions_string
         hash_list.append(hash_query)
         all_queries.append(hash_list)
@@ -137,6 +138,7 @@ if __name__ == "__main__":
     if mention_search == "1":
         mention_list = ["tweets_by_mention"]
         mention_query = config["SEARCH"]['MENTION_QUERY']
+        mention_query = "@" + mention_query 
         mention_query += exclusions_string
         mention_list.append(mention_query)
         all_queries.append(mention_list)

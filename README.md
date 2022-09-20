@@ -2,7 +2,8 @@
 Uses the twitter API to extract tweets given search queries set in config.ini
 ## Installation instructions 
 
-To install the required libraries
+To install the required libraries:
+
   pip install -r requirements.txt
   
 This code was developed to be run from within colab. 

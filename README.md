@@ -20,3 +20,5 @@ The config file now resides at:
 This config file contains details pertaining to the program's parameters. By default, it will run a hashtag search, a mention search, and a key phrase search. Editing the parameters of the config file will allow you to add your own API key, omit search types, change search phrases, and change the location of the CSV export directory.   
 
 When the config file is to your liking, run the second cell (!python Twitter-API/main.py). The specified search or searches will run and CSV files will be exported to the folder you specified. 
+
+If you don't see the folder or the CSV files in colab's file system after running the program in your web browser, try hitting the built-in refresh button at the top of colab's file system.

@@ -21,4 +21,4 @@ This config file contains details pertaining to the program's parameters. By def
 
 When the config file is to your liking, run the second cell (!python Twitter-API/main.py). The specified search or searches will run and CSV files will be exported to the folder you specified. 
 
-If you don't see the folder or the CSV files in colab's file system after running the program in your web browser, try hitting the built-in refresh button at the top of colab's file system.
+If you don't see the folder or the CSV files in colab's file system after running the program in your web browser, try hitting the built-in refresh button at the top of colab's file system GUI.

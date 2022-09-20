@@ -71,6 +71,7 @@ def save_csv(tweet_list, csv_directory, csv_filename):
             text = api.get_status(id=tweet.id, tweet_mode='extended').full_text
         except:
             pass
+
         tweets_dict = {'user_name': tweet.user.name,
                        'user_location': tweet.user.location,
                        'user_description': tweet.user.description,
@@ -80,6 +81,7 @@ def save_csv(tweet_list, csv_directory, csv_filename):
                        'hashtags': [hashtags if hashtags else None],
                        'source': tweet.source,
                        'ID': tweet.id}
+        # add each tweet to a dataframe
         tweets_df = pd.concat([tweets_df, pd.DataFrame(tweets_dict)], axis=0, ignore_index=True)
         tweets_df = tweets_df.reset_index(drop=True)
 
@@ -103,17 +105,50 @@ config.read('Twitter-API/config.ini')
 my_api_key = config["API"]['KEY']
 my_api_secret = config["API"]['SECRET']
 
-# get tweets by hashtags
-# TODO build a search_query string builder for hashtags mentions, keywords
-search_query = config["SEARCH"]['QUERY']
-csv_filename = config["CSV"]["FILENAME"]
+# settings that decide whether to run search types
+hash_search = config["SEARCH"]['HASH_SEARCH']
+mention_search = config["SEARCH"]['MENTION_SEARCH']
+key_search = config["SEARCH"]['KEY_SEARCH']
+
+# Exclusions to add to string. defaults to empty string, always added to search string
+exclude_rt = config["SEARCH"]['EXCLUDE_RT']
+exclusions_string = ""
+if exclude_rt == "1":
+    exclusions_string = " -filter:retweets"
+
+# directory name for CSV, will create a directory if a matching directory does not exist
 csv_directory = config["CSV"]["DIRECTORY"]
 
 # authenticate
 auth = tw.OAuthHandler(my_api_key, my_api_secret)
 api = tw.API(auth, wait_on_rate_limit=True)
 
-# run program. ideally with config the instructions can just be "run all cells"
 if __name__ == "__main__":
-    tweet_list = save_tweets(search_query, api)
-    save_csv(tweet_list, csv_directory, csv_filename)
+
+    # create a list to hold lists, then create lists. Each list is composed of a CSV filename and a search string.
+    all_queries = []
+    if hash_search == "1":
+        hash_list = ["tweets_by_hashtag"]
+        hash_query = config["SEARCH"]['HASH_QUERY']
+        hash_query += exclusions_string
+        hash_list.append(hash_query)
+        all_queries.append(hash_list)
+
+    if mention_search == "1":
+        mention_list = ["tweets_by_mention"]
+        mention_query = config["SEARCH"]['MENTION_QUERY']
+        mention_query += exclusions_string
+        mention_list.append(mention_query)
+        all_queries.append(mention_list)
+
+    if key_search == "1":
+        key_list = ["tweets_by_key"]
+        key_query = config["SEARCH"]['KEY_QUERY']
+        key_query += exclusions_string
+        key_list.append(key_query)
+        all_queries.append(key_list)
+
+    # run api search and csv export methods for all queries
+    for i in range(0, len(all_queries)):
+        tweet_list = save_tweets(all_queries[i][1], api)
+        save_csv(tweet_list, csv_directory, all_queries[i][0])
